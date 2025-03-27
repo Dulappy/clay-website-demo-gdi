@@ -1,6 +1,8 @@
 //#define CLAY_IMPLEMENTATION
 #include "../clay/clay.h"
 
+#include <Windows.h>
+
 double windowWidth = 1024, windowHeight = 768;
 float modelPageOneZRotation = 0;
 uint32_t ACTIVE_RENDERER_INDEX = 1;
@@ -64,9 +66,9 @@ Clay_String* FrameAllocateString(Clay_String string) {
     return allocated;
 }
 
-void LandingPageBlob(int index, int fontSize, Clay_Color color, Clay_String text, Clay_String imageURL) {
+void LandingPageBlob(int index, int fontSize, Clay_Color color, Clay_String text, HBITMAP* hBmp) {
     CLAY({ .id = CLAY_IDI("HeroBlob", index), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 480) }, .padding = CLAY_PADDING_ALL(16), .childGap = 16, .childAlignment = {.y = CLAY_ALIGN_Y_CENTER} }, .border = { .color = color, .width = { 2, 2, 2, 2 }}, .cornerRadius = CLAY_CORNER_RADIUS(10) }) {
-        CLAY({ .id = CLAY_IDI("CheckImage", index), .layout = { .sizing = { CLAY_SIZING_FIXED(32) } }, .image = { .sourceDimensions = { 128, 128 }, .imageData = FrameAllocateString(imageURL)}}) {}
+        CLAY({ .id = CLAY_IDI("CheckImage", index), .layout = { .sizing = { CLAY_SIZING_FIXED(32) } }, .image = { .sourceDimensions = { 128, 128 }, .imageData = hBmp}}) {}
         CLAY_TEXT(text, CLAY_TEXT_CONFIG({ .fontSize = fontSize, .fontId = FONT_ID_BODY_24, .textColor = color }));
     }
 }
@@ -80,11 +82,11 @@ void LandingPageDesktop() {
                 CLAY_TEXT(CLAY_STRING("Clay is laying out this webpage right now!"), CLAY_TEXT_CONFIG({ .fontSize = 36, .fontId = FONT_ID_TITLE_36, .textColor = COLOR_ORANGE }));
             }
             CLAY({ .id = CLAY_ID("HeroImageOuter"), .layout = { .layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = { .width = CLAY_SIZING_PERCENT(0.45f) }, .childAlignment = { CLAY_ALIGN_X_CENTER }, .childGap = 16 } }) {
-                LandingPageBlob(1, 32, COLOR_BLOB_BORDER_5, CLAY_STRING("High performance"), CLAY_STRING("/clay/images/check_5.png"));
-                LandingPageBlob(2, 32, COLOR_BLOB_BORDER_4, CLAY_STRING("Flexbox-style responsive layout"), CLAY_STRING("/clay/images/check_4.png"));
-                LandingPageBlob(3, 32, COLOR_BLOB_BORDER_3, CLAY_STRING("Declarative syntax"), CLAY_STRING("/clay/images/check_3.png"));
-                LandingPageBlob(4, 32, COLOR_BLOB_BORDER_2, CLAY_STRING("Single .h file for C/C++"), CLAY_STRING("/clay/images/check_2.png"));
-                LandingPageBlob(5, 32, COLOR_BLOB_BORDER_1, CLAY_STRING("Compile to 15kb .wasm"), CLAY_STRING("/clay/images/check_1.png"));
+                LandingPageBlob(1, 32, COLOR_BLOB_BORDER_5, CLAY_STRING("High performance"), &img_check1);
+                LandingPageBlob(2, 32, COLOR_BLOB_BORDER_4, CLAY_STRING("Flexbox-style responsive layout"), &img_check2);
+                LandingPageBlob(3, 32, COLOR_BLOB_BORDER_3, CLAY_STRING("Declarative syntax"), &img_check3);
+                LandingPageBlob(4, 32, COLOR_BLOB_BORDER_2, CLAY_STRING("Single .h file for C/C++"), &img_check4);
+                LandingPageBlob(5, 32, COLOR_BLOB_BORDER_1, CLAY_STRING("Compile to 15kb .wasm"), &img_check5);
             }
         }
     }
@@ -98,11 +100,11 @@ void LandingPageMobile() {
             CLAY_TEXT(CLAY_STRING("Clay is laying out this webpage right now!"), CLAY_TEXT_CONFIG({ .fontSize = 32, .fontId = FONT_ID_TITLE_36, .textColor = COLOR_ORANGE }));
         }
         CLAY({ .id = CLAY_ID("HeroImageOuter"), .layout = { .layoutDirection = CLAY_TOP_TO_BOTTOM, .sizing = { .width = CLAY_SIZING_GROW(0) }, .childAlignment = { CLAY_ALIGN_X_CENTER }, .childGap = 16 } }) {
-            LandingPageBlob(1, 28, COLOR_BLOB_BORDER_5, CLAY_STRING("High performance"), CLAY_STRING("/clay/images/check_5.png"));
-            LandingPageBlob(2, 28, COLOR_BLOB_BORDER_4, CLAY_STRING("Flexbox-style responsive layout"), CLAY_STRING("/clay/images/check_4.png"));
-            LandingPageBlob(3, 28, COLOR_BLOB_BORDER_3, CLAY_STRING("Declarative syntax"), CLAY_STRING("/clay/images/check_3.png"));
-            LandingPageBlob(4, 28, COLOR_BLOB_BORDER_2, CLAY_STRING("Single .h file for C/C++"), CLAY_STRING("/clay/images/check_2.png"));
-            LandingPageBlob(5, 28, COLOR_BLOB_BORDER_1, CLAY_STRING("Compile to 15kb .wasm"), CLAY_STRING("/clay/images/check_1.png"));
+            LandingPageBlob(1, 28, COLOR_BLOB_BORDER_5, CLAY_STRING("High performance"), &img_check1);
+            LandingPageBlob(2, 28, COLOR_BLOB_BORDER_4, CLAY_STRING("Flexbox-style responsive layout"), &img_check2);
+            LandingPageBlob(3, 28, COLOR_BLOB_BORDER_3, CLAY_STRING("Declarative syntax"), &img_check3);
+            LandingPageBlob(4, 28, COLOR_BLOB_BORDER_2, CLAY_STRING("Single .h file for C/C++"), &img_check4);
+            LandingPageBlob(5, 28, COLOR_BLOB_BORDER_1, CLAY_STRING("Compile to 15kb .wasm"), &img_check5);
         }
     }
 }
@@ -156,7 +158,7 @@ void DeclarativeSyntaxPageDesktop() {
                 CLAY_TEXT(CLAY_STRING("Create your own library of re-usable components from UI primitives like text, images and rectangles."), CLAY_TEXT_CONFIG({ .fontSize = 28, .fontId = FONT_ID_BODY_36, .textColor = COLOR_RED }));
             }
             CLAY({ .id = CLAY_ID("SyntaxPageRightImage"), .layout = { .sizing = { CLAY_SIZING_PERCENT(0.50) }, .childAlignment = {.x = CLAY_ALIGN_X_CENTER} } }) {
-                CLAY({ .id = CLAY_ID("SyntaxPageRightImageInner"), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 568) } }, .image = { .sourceDimensions = {1136, 1194}, .imageData = FrameAllocateString(CLAY_STRING("/clay/images/declarative.png"))}}) {}
+                CLAY({ .id = CLAY_ID("SyntaxPageRightImageInner"), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 568) } }, .image = { .sourceDimensions = {1136, 1194}, .imageData = &img_declarative}}) {}
             }
         }
     }
@@ -172,7 +174,7 @@ void DeclarativeSyntaxPageMobile() {
             CLAY_TEXT(CLAY_STRING("Create your own library of re-usable components from UI primitives like text, images and rectangles."), CLAY_TEXT_CONFIG({ .fontSize = 28, .fontId = FONT_ID_BODY_36, .textColor = COLOR_RED }));
         }
         CLAY({ .id = CLAY_ID("SyntaxPageRightImage"), .layout = { .sizing = { CLAY_SIZING_GROW(0) }, .childAlignment = {.x = CLAY_ALIGN_X_CENTER} } }) {
-            CLAY({ .id = CLAY_ID("SyntaxPageRightImageInner"), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 568) } }, .image = { .sourceDimensions = {1136, 1194}, .imageData = FrameAllocateString(CLAY_STRING("/clay/images/declarative.png")) } }) {}
+            CLAY({ .id = CLAY_ID("SyntaxPageRightImageInner"), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 568) } }, .image = { .sourceDimensions = {1136, 1194}, .imageData = &img_declarative } }) {}
         }
     }
 }
@@ -323,7 +325,7 @@ void DebuggerPageDesktop() {
             CLAY_TEXT(CLAY_STRING("Press the \"d\" key to try it out now!"), CLAY_TEXT_CONFIG({ .fontSize = 32, .fontId = FONT_ID_TITLE_36, .textColor = COLOR_ORANGE }));
         }
         CLAY({ .id = CLAY_ID("DebuggerRightImageOuter"), .layout = { .sizing = { CLAY_SIZING_PERCENT(0.50) }, .childAlignment = {CLAY_ALIGN_X_CENTER} } }) {
-            CLAY({ .id = CLAY_ID("DebuggerPageRightImageInner"), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 558) } }, .image = { .sourceDimensions = {1620, 1474}, .imageData = FrameAllocateString(CLAY_STRING("/clay/images/debugger.png")) } }) {}
+            CLAY({ .id = CLAY_ID("DebuggerPageRightImageInner"), .layout = { .sizing = { CLAY_SIZING_GROW(.max = 558) } }, .image = { .sourceDimensions = {1620, 1474}, .imageData = &img_debugger } }) {}
         }
     }
 }

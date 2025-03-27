@@ -13,6 +13,7 @@
 #define CLAY_IMPLEMENTATION
 #include "clay/clay.h"
 
+#include "loadimages.c"
 #include "layout/clay-website-demo.c"
 
 //ClayVideoDemo_Data demo_data;
@@ -167,6 +168,7 @@ int APIENTRY WinMain(
 
     //demo_data = ClayVideoDemo_Initialize();
     ClayWebsite_InitMemory();
+    LoadImages();
 
     uint64_t clayRequiredMemory = Clay_MinMemorySize();
     Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(clayRequiredMemory, malloc(clayRequiredMemory));
