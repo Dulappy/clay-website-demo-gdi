@@ -26,7 +26,7 @@ void CenterWindow(HWND hWnd);
 
 long lastMsgTime = 0;
 bool ui_debug_mode;
-LPCSTR fonts[6];
+LOGFONT fonts[6];
 
 uint16_t currSecond = 0;
 uint32_t frames = 0;
@@ -89,6 +89,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (GetClientRect(hwnd, &r))
         {
             Clay_Dimensions dim = (Clay_Dimensions){.height = r.bottom - r.top, .width = r.right - r.left};
+            windowWidth = dim.width;
+            windowHeight = dim.height;
             Clay_SetLayoutDimensions(dim);
         }
 
@@ -174,13 +176,25 @@ int APIENTRY WinMain(
     Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(clayRequiredMemory, malloc(clayRequiredMemory));
     Clay_Initialize(clayMemory, (Clay_Dimensions){.width = 800, .height = 600}, (Clay_ErrorHandler){HandleClayErrors}); // This final argument is new since the video was published
     AddFontResourceEx("fonts\\Quicksand-Regular.ttf", FR_PRIVATE, 0);
+    AddFontResourceEx("fonts\\Quicksand-SemiBold.ttf", FR_PRIVATE, 0);
+    AddFontResourceEx("fonts\\Quicksand-Bold.ttf", FR_PRIVATE, 0);
+    AddFontResourceEx("fonts\\Quicksand-Light.ttf", FR_PRIVATE, 0);
+    AddFontResourceEx("fonts\\Quicksand-Medium.ttf", FR_PRIVATE, 0);
     AddFontResourceEx("fonts\\Calistoga-Regular.ttf", FR_PRIVATE, 0);
-    fonts[FONT_ID_BODY_16] = "Quicksand"; 
-    fonts[FONT_ID_TITLE_56] = "Calistoga";
-    fonts[FONT_ID_BODY_24] = "Quicksand";
-    fonts[FONT_ID_BODY_36] = "Quicksand";
-    fonts[FONT_ID_TITLE_36] = "Quicksand";
-    fonts[FONT_ID_MONOSPACE_24] = "Quicksand";
+
+    LOGFONT lfQuicksand = {
+        0, 0, 0, 0, FW_SEMIBOLD, false, false, false, ANSI_CHARSET, 0, 0, DEFAULT_QUALITY, DEFAULT_PITCH, "Quicksand"
+    };
+    LOGFONT lfCalistoga = {
+        0, 0, 0, 0, FW_NORMAL, false, false, false, ANSI_CHARSET, 0, 0, DEFAULT_QUALITY, DEFAULT_PITCH, "Calistoga"
+    };
+
+    fonts[FONT_ID_BODY_16] = lfQuicksand;
+    fonts[FONT_ID_TITLE_56] = lfCalistoga;
+    fonts[FONT_ID_BODY_24] = lfQuicksand;
+    fonts[FONT_ID_BODY_36] = lfQuicksand;
+    fonts[FONT_ID_TITLE_36] = lfQuicksand;
+    fonts[FONT_ID_MONOSPACE_24] = lfQuicksand;
     Clay_SetMeasureTextFunction(Clay_Win32_MeasureText, fonts);
 
     ZeroMemory(&wc, sizeof wc);
